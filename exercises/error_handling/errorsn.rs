@@ -15,19 +15,17 @@
 //
 // Execute `rustlings hint errorsn` for hints :)
 
-// I AM NOT DONE
 
 use std::error;
 use std::fmt;
 use std::io;
 
 // PositiveNonzeroInteger is a struct defined below the tests.
-fn read_and_validate(b: &mut dyn io::BufRead) -> Result<PositiveNonzeroInteger, ???> {
+fn read_and_validate(b: &mut dyn io::BufRead) -> Result<PositiveNonzeroInteger, Box<dyn error::Error>> {
     let mut line = String::new();
-    b.read_line(&mut line);
-    let num: i64 = line.trim().parse();
-    let answer = PositiveNonzeroInteger::new(num);
-    answer
+    b.read_line(&mut line)?;
+    let num = line.trim().parse()?;
+    Ok(PositiveNonzeroInteger::new(num)?)
 }
 
 // This is a test helper function that turns a &str into a BufReader.
@@ -66,6 +64,46 @@ fn test_ioerror() {
     assert!(read_and_validate(&mut b).is_err());
     assert_eq!("uh-oh!", read_and_validate(&mut b).unwrap_err().to_string());
 }
+
+/*
+pub enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+pub enum Option<T> {
+    Some(T),
+    None,
+}
+
+impl Result<T, E> {
+    fn unwrap(&self) -> T {
+        if let Ok(value) = self {
+            value
+        } else {
+            panic!("cannot unwrap blabla")
+        }
+    }
+
+    fn unwrap_err(&self) -> E {
+        if let Err(value) = self {
+            value
+        } else {
+            panic!("cannot unwrap error blabla")
+        }
+    }
+}
+
+impl Option<T> {
+    fn unwrap(&self) -> T {
+        if let Some(value) = self {
+            value
+        } else {
+            panic!("cannot unwrap blabla")
+        }
+    }
+}
+*/
 
 #[derive(PartialEq, Debug)]
 struct PositiveNonzeroInteger(u64);
